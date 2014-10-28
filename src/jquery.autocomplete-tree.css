@@ -1,0 +1,59 @@
+div.act-container {
+	overflow: hidden;
+	border: 1px solid grey;
+	background-color: white;
+}
+
+div.act-pathTooltip {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	width: auto;
+	padding: 5px;
+	margin: 5px;
+	background-color: #FFFF33;
+	border-radius: 5px;
+}
+
+ul.act-menu {
+	background-color: white;
+	padding: 0;
+	margin: 0;
+	list-style-type: none;
+	display: none;
+}
+
+ul.act-menu  li{
+	padding: 5px;
+	width: auto;
+	cursor: pointer;
+}
+
+ul.act-menu li.act-back span {
+	background: none !important;
+	padding-left: 0 !important;
+}
+
+ul.act-menu li span {
+	background: url(../img/act/item.png) no-repeat center left;
+	padding-left: 20px;
+}
+
+ul.act-menu li.act-menu-hasChildren {
+	background: url(../img/act/right.gif) no-repeat center right;
+	padding-right: 20px !important;
+}
+
+ul.act-menu li.act-menu-hasChildren span, ul.act-menu li.act-selectableParent span {
+	background: url(../img/act/grupo.png) no-repeat center left !important;
+	padding-left: 20px;
+}
+
+ul.act-menu li.act-selected {
+	background-color: #f2f2f2;
+	border: none;
+}
+
+ul.act-menu li.act-unselectable {
+	color: grey;
+}

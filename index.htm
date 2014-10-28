@@ -1,0 +1,60 @@
+<html>
+	<head>
+		<title>jQuery Autocomplete Tree Demo</title>
+		<link rel="stylesheet" type="text/css" href="src/jquery.autocomplete-tree.css" />
+	</head>
+	
+	<body>
+	
+		<h1>Samples</h1>
+		
+		<h4>Tip: on the focused field, use arrows keys to navigate on the tree</h4>
+		<ul>
+			<li>Down : open the tree or change the focus to the below item</li>
+			<li>Up : change the focus to the above item</li>
+			<li>Right: open the child tree </li>
+			<li>Left: return to the parent tree </li>
+			<li>Enter: select an item</li>
+			<li>Esc/Tab: close the tree/cancel</li>
+		</ul>
+	
+		<p>
+			<label for="demo_001">(with default options): 
+				<input type="text" id="demo_001" name="demo_001" value="" />
+			</label>
+		</p>
+		
+	
+		<script src="scripts/jquery-1.7.2.min.js" type="text/javascript" ></script>
+		<script src="src/jquery.autocomplete-tree.js" type="text/javascript" /></script>
+		<script>
+			var sampleDB = {
+				'null' : [ 	{ value : 1, text: 'Item 001', childrenQuantity: 1 },
+							{ value : 2, text: 'Item 002', childrenQuantity: 3 },
+							{ value : 3, text: 'Item 003', childrenQuantity: 2 },
+							{ value : 4, text: 'Item 004', childrenQuantity: 0 } ],
+				
+				'1' : [ 	{ value : 11, text: 'Item 001 - 001', childrenQuantity: 0 }],
+				
+				'2' : [ 	{ value : 21, text: 'Item 002 - 001', childrenQuantity: 0 },
+							{ value : 22, text: 'Item 002 - 002', childrenQuantity: 0 },
+							{ value : 23, text: 'Item 002 - 003', childrenQuantity: 0 } ],
+
+				'3' : [ 	{ value : 31, text: 'Item 003 - 001', childrenQuantity: 0 },
+							{ value : 32, text: 'Item 003 - 002', childrenQuantity: 2 } ],
+							
+				'32' : [ 	{ value : 331, text: 'Item 003 - Item 002 - 001', childrenQuantity: 0 },
+							{ value : 332, text: 'Item 003 - Item 002 - 002', childrenQuantity: 0 } ],
+			};
+		
+			$("#demo_001").autocompleteTree({
+				load: function (request, response) {
+					var prefix = request.term === null ? request.parent : request.term;
+					response(sampleDB[request.parent]);
+				}
+			});
+			
+			
+		</script>
+	</body>
+</html>

@@ -4,7 +4,20 @@
   "description": "Autocomplete with tree navigation",
   "homepage": "https://github.com/ricardomomm/jquery.autocomplete-tree",
   "author": "Ricardo Momm",
-  "main": "dist/jquery.autocomplete-tree.js",
+  "main": "dist/jquery.autocomplete-tree.min.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ricardomomm/jquery.autocomplete-tree.git"
+  },
+  "keywords": [
+    "jquery",
+    "autocomplete",
+    "tree",
+    "jquery-plugin"
+  ],
+  "bugs": {
+    "url": "https://github.com/ricardomomm/jquery.autocomplete-tree/issues"
+  },
   "license": "MIT",
   "dependencies": {
     "jquery": ">=1.7"

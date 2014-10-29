@@ -9,4 +9,5 @@ Roadmap:
 * Bootstrap 3 style
 * Tree search/autocomplete 
 * Icons
-* Specs
+* Spec tests
+* Translation for plugin buttons

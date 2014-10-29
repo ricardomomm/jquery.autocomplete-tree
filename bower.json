@@ -1,7 +1,7 @@
 {
   "name": "jquery.autocomplete-tree",
   "main": "dist/jquery.autocomplete-tree.min.js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "authors": [
     "Ricardo Momm <ricardo18.bnu@gmail.com>"
   ],
@@ -13,7 +13,9 @@
   "keywords": [
     "ajax",
     "autocomplete",
-    "tree"
+    "tree",
+    "jquery",
+    "jquery-plugin"
   ],
   "license": "MIT",
   "homepage": "https://github.com/ricardomomm/jquery.autocomplete-tree",

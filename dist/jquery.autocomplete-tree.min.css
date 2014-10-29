@@ -1,5 +1,5 @@
 /**
-*  Ajax Autocomplete-tree for jQuery, version 0.0.1
+*  Ajax Autocomplete-tree for jQuery, version 0.0.2
 *  (c) 2014 Ricardo Momm
 *
 *  Ajax Autocomplete-tree for jQuery is freely distributable under the terms of an MIT-style license.

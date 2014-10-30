@@ -1,28 +1,28 @@
 {
-    "name": "jQuery-Autocomplete-Tree",
-    "title": "jQuery Autocomplete Tree",
-    "description": "Autocomplete tree provides suggestions while you type into the text field with tree navigation. ",
-    "keywords": [
-        "ajax",
-        "autocomplete",
-				"tree"
-    ],
-    "version": "0.0.1",
-    "author": {
-        "name": "Ricardo Momm",
-        "url": "https://github.com/ricardomomm"
-    },
-    "licenses": [
-        {
-            "type": "MIT",
-            "url": "https://github.com/ricardomomm/jquery.autocomplete-tree/blob/master/LICENSE"
-        }
-    ],
-    "bugs": "https://github.com/ricardomomm/jquery.autocomplete-tree/issues?state=open",
-    "homepage": "https://github.com/ricardomomm/jquery.autocomplete-tree",
-    "docs": "https://github.com/ricardomomm/jquery.autocomplete-tree",
-    "download": "https://github.com/ricardomomm/jquery.autocomplete-tree/tree/master/dist",
-    "dependencies": {
-        "jquery": ">=1.7"
+  "name": "jQuery-Autocomplete-Tree",
+  "title": "jQuery Autocomplete Tree",
+  "description": "Autocomplete tree provides suggestions while you type into the text field with tree navigation. ",
+  "keywords": [
+    "ajax",
+    "autocomplete",
+    "tree"
+  ],
+  "version": "0.0.2",
+  "author": {
+    "name": "Ricardo Momm",
+    "url": "https://github.com/ricardomomm"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/ricardomomm/jquery.autocomplete-tree/blob/master/LICENSE"
     }
+  ],
+  "bugs": "https://github.com/ricardomomm/jquery.autocomplete-tree/issues?state=open",
+  "homepage": "https://github.com/ricardomomm/jquery.autocomplete-tree",
+  "docs": "https://github.com/ricardomomm/jquery.autocomplete-tree",
+  "download": "https://github.com/ricardomomm/jquery.autocomplete-tree/tree/master/dist",
+  "dependencies": {
+    "jquery": ">=1.7"
+  }
 }

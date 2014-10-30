@@ -4,7 +4,7 @@ module.exports = function(grunt) {
 
   var banner = [
       '/**',
-      '*  Ajax Autocomplete-tree for jQuery, version ' + pkg.version, 
+      '*  Ajax Autocomplete-tree for jQuery, version <%= pkg.version %>', 
       '*  (c) 2014 Ricardo Momm',
       '*',
       '*  Ajax Autocomplete-tree for jQuery is freely distributable under the terms of an MIT-style license.',
@@ -15,9 +15,9 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: pkg,
     uglify: {
-      options: {
-        banner: banner
-      },
+			options: {
+				banner: banner
+			},
       build: {
 				files : {
 					'dist/jquery.autocomplete-tree.min.js': 'src/jquery.autocomplete-tree.js'
@@ -43,22 +43,33 @@ module.exports = function(grunt) {
   // Default task(s).
   grunt.registerTask('default', ['uglify', 'cssmin']);
 
-  grunt.task.registerTask('build', 'Create release', function() {
+  grunt.task.registerTask('release', 'Create release', function(version) {
+		
+    // Update plugin version:
+    filePath = 'package.json';
+    src = grunt.file.readJSON(filePath);
 
-    // Minify latest version:
-    grunt.task.run('uglify');
-		grunt.task.run('cssmin');
-
+    if (src.version !== version){
+      src.version = version;
+      grunt.log.writeln('Updating: ' + filePath);
+      grunt.file.write(filePath, JSON.stringify(src, null, 2));
+			
+			grunt.config('pkg', grunt.file.readJSON('package.json'));
+			
+    } else {
+      grunt.log.writeln('No updates for: ' + filePath);
+    }
+		
     // Update plugin version:
     filePath = 'ricardomomm-autocomplete-tree.jquery.json';
     src = grunt.file.readJSON(filePath);
 
     if (src.version !== version){
       src.version = version;
-      console.log('Updating: ' + filePath);
-      grunt.file.write(filePath, JSON.stringify(src, null, 4));
+      grunt.log.writeln('Updating: ' + filePath);
+      grunt.file.write(filePath, JSON.stringify(src, null, 2));
     } else {
-      console.log('No updates for: ' + filePath);
+      grunt.log.writeln('No updates for: ' + filePath);
     }
 
     // Update bower version:
@@ -67,10 +78,15 @@ module.exports = function(grunt) {
 
     if (src.version !== version){
       src.version = version;
-      console.log('Updating: ' + filePath);
-      grunt.file.write(filePath, JSON.stringify(src, null, 4));
+      grunt.log.writeln('Updating: ' + filePath);
+      grunt.file.write(filePath, JSON.stringify(src, null, 2));
     } else {
-      console.log('No updates for: ' + filePath);
+      grunt.log.writeln('No updates for: ' + filePath);
     }
+		
+    // Minify latest version:
+    grunt.task.run('uglify:build');
+		grunt.task.run('cssmin:build');
+		
   });
 };

@@ -1,11 +1,26 @@
-jquery.autocomplete-tree
+# jquery.autocomplete-tree.js
 ========================
 
-jQuery autocomplete with tree navigation
+A simple jQuery autocomplete with tree/hierarchical navigation
 
-Sample: index.htm
+## Bower
 
-Roadmap:
+`bower install -S jquery.autocomplete-tree`
+
+## NPM
+
+`npm install --save jquery.autocomplete-tree`
+
+## Sample
+
+[index.htm] (https://github.com/ricardomomm/jquery.autocomplete-tree/blob/master/index.htm)
+
+## Building & Testing
+
+* `grunt build`
+
+## TODO list
+
 * Bootstrap 3 style
 * Tree search/autocomplete 
 * Icons

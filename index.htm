@@ -1,6 +1,8 @@
 <html>
 	<head>
 		<title>jQuery Autocomplete Tree Demo</title>
+		<link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap-theme.min.css" />
 		<link rel="stylesheet" type="text/css" href="src/jquery.autocomplete-tree.css" />
 	</head>
 	
@@ -17,15 +19,15 @@
 			<li>Enter: select an item</li>
 			<li>Esc/Tab: close the tree/cancel</li>
 		</ul>
-	
-		<p>
-			<label for="demo_001">(with default options): 
-				<input type="text" id="demo_001" name="demo_001" value="" />
-			</label>
-		</p>
+		<hr/>
 		
-	
-		<script src="scripts/jquery-1.7.2.min.js" type="text/javascript" ></script>
+		<h4>Sample with default options</h4>
+		<label for="demo_001">Press KEY_DOWN to open: 
+			<input type="text" id="demo_001" name="demo_001" value="" />
+		</label>
+		
+		<script src="bower_components/bootstrap/dist/js/bootstrap.min.js" type="text/javascript" ></script>
+		<script src="bower_components/jquery/dist/jquery.min.js" type="text/javascript" ></script>
 		<script src="src/jquery.autocomplete-tree.js" type="text/javascript" /></script>
 		<script>
 			var sampleDB = {

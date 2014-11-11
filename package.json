@@ -18,6 +18,9 @@
   "bugs": {
     "url": "https://github.com/ricardomomm/jquery.autocomplete-tree/issues"
   },
+  "scripts": {
+	"test": "grunt test --verbose --force"
+  },
   "license": "MIT",
   "dependencies": {
     "jquery": ">=1.7",

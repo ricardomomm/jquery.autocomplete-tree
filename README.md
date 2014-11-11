@@ -3,7 +3,7 @@
 
 [![Bower version](https://badge.fury.io/bo/jquery.autocomplete-tree.svg)](http://badge.fury.io/bo/jquery.autocomplete-tree)
 [![npm version](https://badge.fury.io/js/jquery.autocomplete-tree.svg)](http://badge.fury.io/js/jquery.autocomplete-tree)
-[![devDependency Status](https://david-dm.org/ricardomomm/jquery.autocomplete-tree/dev-status.svg)](https://david-dm.org/ricardomomm/jquery.autocomplete-tree#info=devDependencies)
+[![Dependency Status](https://david-dm.org/ricardomomm/jquery.autocomplete-tree/status.svg)](https://david-dm.org/ricardomomm/jquery.autocomplete-tree#info=dependencies)
 
 A simple jQuery autocomplete with tree/hierarchical navigation
 
@@ -22,6 +22,7 @@ A simple jQuery autocomplete with tree/hierarchical navigation
 ## Building & Testing
 
 * `grunt build`
+* `grunt test`
 
 ## TODO list
 

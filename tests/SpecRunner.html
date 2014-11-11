@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Jasmine Spec Runner</title>
+
+  <link rel="shortcut icon" type="image/png" href="lib/jasmine/jasmine_favicon.png">
+  <link rel="stylesheet" type="text/css" href="lib/jasmine/jasmine.css">
+  <link rel="stylesheet" type="text/css" href="lib/jasmine-species/jasmine-be-calm.css">
+  
+  
+  <script type="text/javascript" src="lib/jasmine/jasmine.js"></script>
+  <script type="text/javascript" src="lib/jasmine/jasmine-html.js"></script>
+  
+  <script type="text/javascript" src="lib/jasmine-species/jasmine-grammar.js"></script>
+  <script type="text/javascript" src="lib/jasmine-species/jasmine-reporting.js"></script>
+  
+  <script type="text/javascript" src="lib/setup.js"></script>
+  <script type="text/javascript" src="lib/matchers.js"></script>
+  <script type="text/javascript" src="../scripts/jquery-1.7.2.min.js"></script>
+
+  <!-- include source files here... -->
+  <script type="text/javascript" src="../src/jquery.autocomplete-tree.js"></script>
+
+  <!-- include spec files here... -->
+  <script type="text/javascript" src="spec/init.spec.js"></script>
+  <script type="text/javascript" src="spec/key-down.spec.js"></script>
+
+  <script>
+  
+		var jasmineEnv = jasmine.getEnv();
+		var styledReporter = new jasmine.reporting.StyledHtmlReporter();
+
+		jasmineEnv.addReporter(styledReporter);
+
+		jasmineEnv.specFilter = function(spec) {
+			return styledReporter.specFilter(spec);
+		};
+
+		window.onload = function() {
+			jasmineEnv.execute(); 
+		}
+  </script>
+  
+</head>
+
+<body>
+</body>
+</html>

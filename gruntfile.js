@@ -33,14 +33,31 @@ module.exports = function(grunt) {
 					'dist/jquery.autocomplete-tree.min.css': 'src/jquery.autocomplete-tree.css'
 				}
       }
+		},
+		jasmine: {
+			full: {
+				src: "src/**/*.js",
+				options: {
+					specs: "tests/spec/*[S|s]pec.js",
+					vendor: [
+						"tests/lib/matchers.js",
+						"tests/lib/jasmine-species/jasmine-grammar.js",
+						"tests/lib/setup.js",
+						"scripts/jquery-1.7.2.min.js",
+						//"tests/lib/jquery.keymasher.js"
+					]
+				}
+			}
 		}
   });
 
   // Load the plugin that provides the "uglify" task.
+	grunt.loadNpmTasks('grunt-contrib-jasmine');
   grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
 
   // Default task(s).
+	grunt.registerTask('test', ['jasmine']);
   grunt.registerTask('default', ['uglify', 'cssmin']);
 
   grunt.task.registerTask('release', 'Create release', function(version) {

@@ -6,7 +6,7 @@
  * For details, see the web site: https://github.com/ricardomomm/jquery.autocomplete-tree
  */
 /*jslint browser: true, white: true, plusplus: true, vars: true */
-/*global define, window, document, jQuery, exports, require */
+/*global define, window, jQuery, exports, require */
 
 // Expose plugin as an AMD module if AMD loader is present:
 (function (factory) {
@@ -62,7 +62,8 @@
 				treeSeparator : ' » ',
 				maxVisibleItens : 5,
 				animationDuration : 200,
-				showPathTooltip : true
+				showPathTooltip : true,
+				backLabel: 'Back'
 			};
 
 			// Shared variables:
@@ -433,7 +434,7 @@
 			 */
 			createBackButton : function (parentItemId) {
 				var that = this;
-				var backButton = $("<li id='back-" + parentItemId + "' data-parent='" + parentItemId + "' class='act-back act-unselectable'><span>Voltar</span></li>")
+				var backButton = $("<li id='back-" + parentItemId + "' data-parent='" + parentItemId + "' class='act-back act-unselectable'><span>" + that.options.backLabel + "</span></li>")
 					.click(function () {
 						that.selectItem();
 					})

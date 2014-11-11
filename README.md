@@ -28,4 +28,3 @@ A simple jQuery autocomplete with tree/hierarchical navigation
 * Tree search/autocomplete 
 * Icons
 * Spec tests
-* Translation for plugin buttons

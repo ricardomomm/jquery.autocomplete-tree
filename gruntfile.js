@@ -46,7 +46,8 @@ module.exports = function(grunt) {
 						"scripts/jquery-1.7.2.min.js",
 						"tests/lib/jquery.keymasher.js",
 						"tests/lib/jasmine.jquery.js"
-					]
+					],
+					styles: "src/**/*.css"
 				}
 			}
 		}

@@ -10,5 +10,15 @@ importGrammar(jasmine.grammar.FeatureStory);
 importGrammar(jasmine.grammar.GWT);
 
 var input;
-beforeEach(function(){ input = $("<input />").appendTo("body").focus(); });
-afterEach(function(){ input.remove();});
+
+beforeEach(function(){ 
+	input = $("<input />").appendTo("body").focus(); 
+});
+
+afterEach(function(){ 
+
+	if (input.data('autocompletetree'))
+		input.autocompleteTree('dispose');
+		
+	input.remove();
+});

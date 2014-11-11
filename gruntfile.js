@@ -44,7 +44,8 @@ module.exports = function(grunt) {
 						"tests/lib/jasmine-species/jasmine-grammar.js",
 						"tests/lib/setup.js",
 						"scripts/jquery-1.7.2.min.js",
-						//"tests/lib/jquery.keymasher.js"
+						"tests/lib/jquery.keymasher.js",
+						"tests/lib/jasmine.jquery.js"
 					]
 				}
 			}

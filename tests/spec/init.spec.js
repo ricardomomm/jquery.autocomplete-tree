@@ -7,7 +7,7 @@ feature("Initializing a AutocompleteTree", function () {
 			input.autocompleteTree();
 		});
 		then("the value should be an empty string", function () {
-			expect(input).toHaveValue("");
+			expect($("#act-container")[0]).not.toBeInDOM();
 		});
 	});
 });

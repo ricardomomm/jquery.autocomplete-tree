@@ -682,6 +682,10 @@
 					var that = this;
 					that.el.off('.autocompletetree').removeData('autocompletetree');
 					that.container.remove();
+					
+					if (that.options.showPathTooltip){
+						$("#act-pathTooltip").remove();
+					}
 			},
 			/**
 			 * Init

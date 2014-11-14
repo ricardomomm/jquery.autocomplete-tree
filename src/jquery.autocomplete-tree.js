@@ -59,7 +59,7 @@
 				showBackButton : true,
 				leftMargin : 15,
 				topMargin : 5,
-				treeSeparator : ' » ',
+				treeSeparator : ' \u00BB ',
 				maxVisibleItens : 5,
 				animationDuration : 200,
 				showPathTooltip : true,
@@ -165,7 +165,7 @@
 
 					that.container.css({
 						'height' : height + 'px',
-						'width' : (that.el.outerWidth() + (that.el.css('overflow-y') == 'scroll' ? 0 : 15)) + 'px',
+						'width' : (that.el.outerWidth() + (that.el.css('overflow-y') === 'scroll' ? 0 : 15)) + 'px',
 						'overflow-y' : 'scroll'
 					});
 				}
@@ -222,7 +222,7 @@
 					
 				that.refreshContainerSize(item);
 				
-				// slide left if one item it´s already selected
+				// slide left if one item its already selected
 				if (that.visibleItem && that.visibleItem.length > 0) {
 					that.slideLeft(that.visibleItem, item);
 				}
@@ -342,13 +342,13 @@
 			/**
 			 * Begin load the child itens
 			 */
-			beginLoadItems : function (parentItemId) {
+			beginLoadItems : function () {
 				// TODO: show loading image
 			},
 			/**
 			 * End load the child itens
 			 */
-			endLoadItems : function (parentItemId) {
+			endLoadItems : function () {
 				// TODO: hide loading image
 			},
 			
@@ -398,7 +398,6 @@
 			createItemsContainer : function (parentItemId, items) {
 				var that = this;
 				var html = $("#sons-of-" + parentItemId);
-				// Se não existe
 				if (html.length === 0) {
 					that.showContainer();
 					that.debug('Generating {0} container html', parentItemId);
@@ -700,7 +699,6 @@
 					that.onKeyPress(e);
 				});
 
-				// Finalizou a inicialização
 				that.debug('AutoComplete-Tree initialized');
 			}
 

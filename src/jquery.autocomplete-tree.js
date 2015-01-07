@@ -63,12 +63,16 @@
 				maxVisibleItens : 5,
 				animationDuration : 200,
 				showPathTooltip : true,
-				backLabel: 'Back'
+				backLabel: 'Back',
+                rightArrowTemplate: function() {
+                    return ' \u00BB ';
+                }
 			};
 
 			// Shared variables:
 			that.element = el;
 			that.el = $(el);
+            that.prefix = el.id;
 			that.container = null;
 			that.options = $.extend({}, defaults, options);
 			that.console = window.console || noop;
@@ -95,15 +99,22 @@
 					that.selectItem();
 					return;
 				case keys.ESC:
+					that.hideAllItens();
+                    break;
 				case keys.TAB:
 					that.hideAllItens();
-					break;
+					return;
 				}
 
 				// Cancel event if function did not return:
 				e.stopImmediatePropagation();
 				e.preventDefault();
 			},
+            onBodyClick : function () {
+                var that = this;
+                if (that.isVisible)
+                    that.hideAllItens();
+            },
 			debug : function (text) {
 				var that = this;
 				if (that.options.debug && arguments.length >= 1) {
@@ -133,7 +144,7 @@
 				if (that.container === null) {
 					var offset = that.el.offset();
 
-					that.container = $("<div id='act-container' class='act-container'></div>")
+					that.container = $("<div id='" + that.prefix + "-act-container' class='act-container'></div>")
 						.css({
 							'position' : 'absolute',
 							'left' : offset.left + 'px',
@@ -142,7 +153,9 @@
 						})
 						.appendTo('body')
 						.show();
-				}
+				} else {
+                    that.container.show();
+                }
 			},
 			/**
 			 * Adjust the container height to the maxVisibleItens option.
@@ -256,8 +269,8 @@
 				// If it has parent then hide sons and focus on parent item
 				var parentId = oldVisibleItem.data('parent');
 				if (parentId) {
-					that.selectedItem = $('#son-' + parentId);
-					that.visibleItem = $('#sons-of-' + that.selectedItem.data('parent'));
+					that.selectedItem = $("#" + that.prefix + "-son-" + parentId);
+					that.visibleItem = $("#" + that.prefix + "-sons-of-" + that.selectedItem.data('parent'));
 					that.refreshContainerSize(that.visibleItem);
 					that.slideRight(oldVisibleItem, that.visibleItem);
 				} else {
@@ -397,13 +410,13 @@
 			 */
 			createItemsContainer : function (parentItemId, items) {
 				var that = this;
-				var html = $("#sons-of-" + parentItemId);
+				var html = $("#" + that.prefix + "-sons-of-" + parentItemId);
 				if (html.length === 0) {
 					that.showContainer();
 					that.debug('Generating {0} container html', parentItemId);
 					
-					html = $("<ul id='sons-of-" + parentItemId + "' data-parent='" + parentItemId + "' class='act-menu' ></ul>")
-						.appendTo($('#act-container'));
+					html = $("<ul id='" + that.prefix + "-sons-of-" + parentItemId + "' data-parent='" + parentItemId + "' class='act-menu' ></ul>")
+						.appendTo(that.container);
 
 					if (parentItemId !== null) {
 						if (that.options.showBackButton) {
@@ -411,7 +424,7 @@
 							html.append(backButton);
 						}
 						if (that.options.showParentInChildList && that.options.canSelectParentInChildList) {
-							var parentItemData = $("#son-" + parentItemId).data('item');
+							var parentItemData = $("#" + that.prefix + "-son-" + parentItemId).data('item');
 							var selectableParent = that.createSelectableParentItem(parentItemData);
 							html.append(selectableParent);
 						}
@@ -433,9 +446,13 @@
 			 */
 			createBackButton : function (parentItemId) {
 				var that = this;
-				var backButton = $("<li id='back-" + parentItemId + "' data-parent='" + parentItemId + "' class='act-back act-unselectable'><span>" + that.options.backLabel + "</span></li>")
-					.click(function () {
+				var backButton = $("<li id='" + that.prefix + "-back-" + parentItemId + "' data-parent='" + parentItemId + "' class='act-back act-unselectable'><span>" + that.options.backLabel + "</span></li>")
+					.click(function (e) {
 						that.selectItem();
+                        
+                        // Cancel event if function did not return:
+                        e.stopImmediatePropagation();
+                        e.preventDefault();
 					})
 					.hover(
 						function () {
@@ -463,12 +480,16 @@
 			createSelectableParentItem : function (item) {
 				var that = this;
 				var itemValue = that.getItemValue(item);
-				var $child = $("#son-" + itemValue);
-				var child = $("<li id='parent-" + itemValue + "' data-parent='" + $child.data('parent') + "' data-val='" + itemValue + "' ><span>" + that.getItemText(item) + "</span></li>");
+				var $child = $("#" + that.prefix + "-son-" + itemValue);
+				var child = $("<li id='" + that.prefix + "-parent-" + itemValue + "' data-parent='" + $child.data('parent') + "' data-val='" + itemValue + "' ><span>" + that.getItemText(item) + "</span></li>");
 				child.data('item', item)
 					.addClass('act-selectableParent')
-					.click(function () {
+					.click(function (e) {
 						that.selectItem();
+                        
+                        // Cancel event if function did not return:
+                        e.stopImmediatePropagation();
+                        e.preventDefault();
 					})
 					.hover(
 						function () {
@@ -497,15 +518,19 @@
 			createItem : function (parentItemId, item) {
 				var that = this;
 				var itemValue = that.getItemValue(item);
-				var child = $("<li id='son-" + itemValue + "' data-parent='" + parentItemId + "'  data-val='" + itemValue + "' ><span>" + that.getItemText(item) + "</span></li>");
+				var child = $("<li id='" + that.prefix + "-son-" + itemValue + "' data-parent='" + parentItemId + "'  data-val='" + itemValue + "' ><span>" + that.getItemText(item) + "</span></li>");
 				child.data('item', item)
-					.click(function () {
+					.click(function (e) {
 						var childCount = that.getItemChildCount($(this).data('item'));
 						if ((childCount > 0 && that.options.canSelectParent) || childCount <= 0) {
 							that.selectItem();
 						} else if (childCount > 0) {
 							that.loadItems($(this).data('val'));
 						}
+                        
+                        // Cancel event if function did not return:
+                        e.stopImmediatePropagation();
+                        e.preventDefault();
 					})
 					.hover(
 						function () {
@@ -528,6 +553,8 @@
 					if (!that.options.canSelectParent) {
 						child.addClass('act-unselectable');
 					}
+                    
+                    $("<span class=\"pull-right\">" + that.options.rightArrowTemplate(item) + "</span>").insertAfter(child.find("span"));
 				}
 				
 				return child;
@@ -577,9 +604,9 @@
 			 */
 			showPathTooltip : function () {
 				var that = this;
-				var tooltip = $("#act-pathTooltip");
+				var tooltip = $("#" + that.prefix + "-act-pathTooltip");
 				if (tooltip.length === 0) {
-					tooltip = $("<div id='act-pathTooltip' class='act-pathTooltip' style='display:none'><div>");
+					tooltip = $("<div id='" + that.prefix + "-act-pathTooltip' class='act-pathTooltip' style='display:none'><div>");
 					tooltip.appendTo('body');
 				}
 				tooltip.hide();
@@ -588,9 +615,9 @@
 					var currentItem = that.selectedItem;
 					var totalPath = '';
 					do {
-						totalPath = currentItem.text() + totalPath;
+						totalPath = currentItem.find("span:first").text() + totalPath;
 						totalPath = that.options.treeSeparator + totalPath;
-						currentItem = $("#son-" + currentItem.data('parent'));
+						currentItem = $("#" + that.prefix + "-son-" + currentItem.data('parent'));
 					} while (currentItem.length > 0);
 					tooltip.text(totalPath);
 					tooltip.show();
@@ -607,7 +634,7 @@
 						that.el.val(that.getItemText(item));
 						that.container.hide();
 						if (that.options.showPathTooltip) {
-							$("#act-pathTooltip").hide();
+							$("#" + that.prefix + "-act-pathTooltip").hide();
 						}
 						that.isVisible = false;
 						that.options.select.apply(that.el, [item]);
@@ -683,7 +710,7 @@
 					that.container.remove();
 					
 					if (that.options.showPathTooltip){
-						$("#act-pathTooltip").remove();
+						$("#" + that.prefix + "-act-pathTooltip").remove();
 					}
 			},
 			/**
@@ -698,6 +725,10 @@
 				that.el.on('keydown.autocompletetree', function (e) {
 					that.onKeyPress(e);
 				});
+                
+                $("body").on('click', function (e) {
+                    that.onBodyClick(e);
+                });
 
 				that.debug('AutoComplete-Tree initialized');
 			}

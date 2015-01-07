@@ -26,11 +26,18 @@
 			<input type="text" id="demo_001" name="demo_001" value="" />
 		</label>
 		
-		<script src="bower_components/bootstrap/dist/js/bootstrap.min.js" type="text/javascript" ></script>
+		<hr/>
+		
+		<h4>Sample with scroll</h4>
+		<label for="demo_002">Press KEY_DOWN to open: 
+			<input type="text" id="demo_002" name="demo_002" value="" />
+		</label>
+		
 		<script src="bower_components/jquery/dist/jquery.min.js" type="text/javascript" ></script>
+		<script src="bower_components/bootstrap/dist/js/bootstrap.min.js" type="text/javascript" ></script>
 		<script src="src/jquery.autocomplete-tree.js" type="text/javascript" /></script>
 		<script>
-			var sampleDB = {
+			var sampleDB_001 = {
 				'null' : [ 	{ value : 1, text: 'Item 001', childrenQuantity: 1 },
 							{ value : 2, text: 'Item 002', childrenQuantity: 3 },
 							{ value : 3, text: 'Item 003', childrenQuantity: 2 },
@@ -52,7 +59,37 @@
 			$("#demo_001").autocompleteTree({
 				load: function (request, response) {
 					var prefix = request.term === null ? request.parent : request.term;
-					response(sampleDB[request.parent]);
+					response(sampleDB_001[request.parent]);
+				}
+			});
+			
+			var sampleDB_002 = {
+				'null' : [ 	{ value : 1, text: 'Item 001', childrenQuantity: 8 },
+							{ value : 2, text: 'Item 002', childrenQuantity: 1 },
+							{ value : 3, text: 'Item 003', childrenQuantity: 0 },
+							{ value : 4, text: 'Item 004', childrenQuantity: 0 },
+							{ value : 5, text: 'Item 005', childrenQuantity: 0 },
+							{ value : 6, text: 'Item 006', childrenQuantity: 0 },
+							{ value : 7, text: 'Item 007', childrenQuantity: 0 },
+							{ value : 8, text: 'Item 008', childrenQuantity: 0 } ],
+							
+				'1'	: [ 	{ value : 11, text: 'Item 001 - 001', childrenQuantity: 0 },
+							{ value : 12, text: 'Item 001 - 002', childrenQuantity: 0 },
+							{ value : 13, text: 'Item 001 - 003', childrenQuantity: 0 },
+							{ value : 14, text: 'Item 001 - 004', childrenQuantity: 0 },
+							{ value : 15, text: 'Item 001 - 005', childrenQuantity: 0 },
+							{ value : 16, text: 'Item 001 - 006', childrenQuantity: 0 },
+							{ value : 17, text: 'Item 001 - 007', childrenQuantity: 0 },
+							{ value : 18, text: 'Item 001 - 008', childrenQuantity: 0 } ],
+							
+				'2'	: [		{ value : 21, text: 'Item 002 - 001', childrenQuantity: 0 }]
+							
+			};
+		
+			$("#demo_002").autocompleteTree({
+				load: function (request, response) {
+					var prefix = request.term === null ? request.parent : request.term;
+					response(sampleDB_002[request.parent]);
 				}
 			});
 			

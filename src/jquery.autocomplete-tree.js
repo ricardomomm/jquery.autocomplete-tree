@@ -33,7 +33,9 @@
 				LEFT : 37,
 				UP : 38,
 				RIGHT : 39,
-				DOWN : 40
+				DOWN : 40,
+				BCKSPC : 8,
+				DELETE : 46
 			};
 
 		function AutocompleteTree(el, options) {
@@ -76,6 +78,7 @@
 			that.container = null;
 			that.options = $.extend({}, defaults, options);
 			that.console = window.console || noop;
+			that.searching = false;
 
 			// Initialize and set options:
 			that.initialize();
@@ -86,75 +89,91 @@
 		AutocompleteTree.prototype = {
 
 			onKeyPress : function (e) {
-				var that = this;
-
 				switch (e.which) {
-				case keys.LEFT:
-				case keys.RIGHT:
-				case keys.UP:
-				case keys.DOWN:
-					that.navigate(e.which);
-					return;
-				case keys.RETURN:
-					that.selectItem();
-					return;
-				case keys.ESC:
-					that.hideAllItens();
-                    break;
-				case keys.TAB:
-					that.hideAllItens();
-					return;
+					case keys.LEFT:
+					case keys.RIGHT:
+					case keys.UP:
+					case keys.DOWN:
+						this.navigate(e.which);
+						return;
+					case keys.RETURN:
+						this.selectItem();
+						return;
+					case keys.ESC:
+						this.hideAllItens();
+	                    break;
+					case keys.TAB:
+						this.hideAllItens();
+						return;				
+					default:
+						return;
 				}
 
 				// Cancel event if function did not return:
 				e.stopImmediatePropagation();
 				e.preventDefault();
 			},
+			onKeyUp : function (e) {
+				if (this.searching && !this.el.val()) {
+					this.endSearch();
+				} else if (!this.searching && this.el.val()) {
+					this.beginSearch();
+				}
+			},
+			beginSearch : function () {
+				if (this.searching && this.el.val()) {
+					return;
+				} else if (this.searching) {
+					this.endSearch();
+					return;
+				}
+				
+				this.debug('Begin search');	
+				this.searching = true;
+			},
+			endSearch : function () {
+				this.debug('End search');
+				this.searching = false;	
+			},			
             onBodyClick : function () {
-                var that = this;
-                if (that.isVisible)
-                    that.hideAllItens();
+                if (this.isVisible)
+                    this.hideAllItens();
             },
 			debug : function (text) {
-				var that = this;
-				if (that.options.debug && arguments.length >= 1) {
+				if (this.options.debug && arguments.length >= 1) {
 					for (var i = 1; i < arguments.length; i++) {
 						text = text.replace('{' + (i - 1) + '}', arguments[i]);
 					}
-					that.console.debug(text);
+					this.console.debug(text);
 				}
 			},
 			getItemValue : function (item) {
-				var that = this;
-				return that.options.getValue(item);
+				return this.options.getValue(item);
 			},
 			getItemText : function (item) {
-				var that = this;
-				return that.options.getText(item);
+				return this.options.getText(item);
 			},
 			getItemChildCount : function (item) {
-				var that = this;
-				return that.options.getChildCount(item);
+				return this.options.getChildCount(item);
 			},
 			/**
 			 * Create the tree container if it doesn't exist.
 			 */
 			showContainer : function () {
-				var that = this;
-				if (that.container === null) {
-					var offset = that.el.offset();
+				if (this.container === null) {
+					var offset = this.el.offset();
 
-					that.container = $("<div id='" + that.prefix + "-act-container' class='act-container'></div>")
+					this.container = $("<div id='" + this.prefix + "-act-container' class='act-container'></div>")
 						.css({
 							'position' : 'absolute',
 							'left' : offset.left + 'px',
-							'top' : (offset.top + that.el.outerHeight()) + 'px',
-							'width' : (that.el.width()) + 'px'
+							'top' : (offset.top + this.el.outerHeight()) + 'px',
+							'width' : (this.el.width()) + 'px'
 						})
 						.appendTo('body')
 						.show();
 				} else {
-                    that.container.show();
+                    this.container.show();
                 }
 			},
 			/**
@@ -162,23 +181,23 @@
 			 * @param {Object[]} item
 			 */
 			refreshContainerSize : function (item) {
-				var that = this;
-				if (item.children("li").length <= that.options.maxVisibleItens) {
-					that.container.css({
+				var children = item.children("li");
+				if (children.length <= this.options.maxVisibleItens) {
+					this.container.css({
 						'height' : item.outerHeight() + 'px',
-						'width' : that.el.outerWidth() + 'px'
+						'width' : this.el.outerWidth() + 'px'
 					});
 				} else {
 					var height = 0;
-					item.children("li").each(function (index, el) {
-						if (index < that.options.maxVisibleItens) {
+					children.each(function (index, el) {
+						if (index < this.options.maxVisibleItens) {
 							height += $(el).outerHeight();
 						}
 					});
 
-					that.container.css({
+					this.container.css({
 						'height' : height + 'px',
-						'width' : (that.el.outerWidth() + (that.el.css('overflow-y') === 'scroll' ? 0 : 15)) + 'px',
+						'width' : (this.el.outerWidth() + (this.el.css('overflow-y') === 'scroll' ? 0 : 15)) + 'px',
 						'overflow-y' : 'scroll'
 					});
 				}
@@ -188,9 +207,8 @@
 			 * @param {Object} item
 			 */
 			ensureItemIsVisibile : function (item) {
-				var that = this;
-				if (that.isHiddenByScroll(item)) {
-					that.container.animate({ scrollTop : item.offset().top - that.container.offset().top}, "fast");
+				if (this.isHiddenByScroll(item)) {
+					this.container.animate({ scrollTop : item.offset().top - this.container.offset().top}, "fast");
 				}
 			},
 			/**
@@ -203,11 +221,10 @@
 					return false;
 				}
 				
-				var that = this;
-				var docViewTop = that.container.scrollTop();
-				var docViewBottom = docViewTop + that.container.height();
+				var docViewTop = this.container.scrollTop();
+				var docViewBottom = docViewTop + this.container.height();
 
-				var elemTop = item.offset().top - that.container.offset().top;
+				var elemTop = item.offset().top - this.container.offset().top;
 				var elemBottom = elemTop + item.height();
 
 				return ((elemBottom > docViewBottom) || (elemTop < docViewTop));
@@ -221,35 +238,33 @@
 					return;
 				}
 
-				var that = this;
-				that.container.show();
-				var left = that.selectedItem && that.selectedItem.length > 0 ? that.selectedItem.offset().left + that.selectedItem.outerWidth() : 0;
+				this.container.show();
+				var left = this.selectedItem && this.selectedItem.length > 0 ? this.selectedItem.offset().left + this.selectedItem.outerWidth() : 0;
 				item.css(
 					{
 						'position' : 'absolute',
 						'left' : left + 'px',
 						'top' : '0px',
-						'width' : ((that.selectedItem && that.selectedItem.length > 0) ? that.selectedItem.outerWidth() : (that.el.outerWidth())) + 'px' 
+						'width' : ((this.selectedItem && this.selectedItem.length > 0) ? this.selectedItem.outerWidth() : (this.el.outerWidth())) + 'px' 
 					})
 					.show();
 					
-				that.refreshContainerSize(item);
+				this.refreshContainerSize(item);
 				
 				// slide left if one item its already selected
-				if (that.visibleItem && that.visibleItem.length > 0) {
-					that.slideLeft(that.visibleItem, item);
+				if (this.visibleItem && this.visibleItem.length > 0) {
+					this.slideLeft(this.visibleItem, item);
 				}
 				
-				that.visibleItem = item;
-				that.selectedItem = null;
-				that.isVisible = true;
-				that.focusNextItem(item);
+				this.visibleItem = item;
+				this.selectedItem = null;
+				this.isVisible = true;
+				this.focusNextItem(item);
 			},
 			/**
 			 * Hide current visible item and show the parent if it exists
 			 */
 			hideItem : function () {
-				var that = this;
 				/*
 				if (that.container.css('overflow-y') == 'scroll') {
 					that.container.css({ 'width' : (that.el.outerWidth() - 15) + 'px' });
@@ -257,30 +272,30 @@
 				that.container.css({ 'overflow-y' : 'hidden' });
 				*/
 				
-				if (!that.visibleItem || that.visibleItem.length === 0 || !that.visibleItem.is(':visible')) {
+				if (!this.visibleItem || this.visibleItem.length === 0 || !this.visibleItem.is(':visible')) {
 					return;
 				}
 
-				var oldVisibleItem = that.visibleItem;
-				if (that.selectedItem) {
-					that.selectedItem.toggleClass('act-selected');
+				var oldVisibleItem = this.visibleItem;
+				if (this.selectedItem) {
+					this.selectedItem.toggleClass('act-selected');
 				}
 				
 				// If it has parent then hide sons and focus on parent item
 				var parentId = oldVisibleItem.data('parent');
 				if (parentId) {
-					that.selectedItem = $("#" + that.prefix + "-son-" + parentId);
-					that.visibleItem = $("#" + that.prefix + "-sons-of-" + that.selectedItem.data('parent'));
-					that.refreshContainerSize(that.visibleItem);
-					that.slideRight(oldVisibleItem, that.visibleItem);
+					this.selectedItem = $("#" + this.prefix + "-son-" + parentId);
+					this.visibleItem = $("#" + this.prefix + "-sons-of-" + this.selectedItem.data('parent'));
+					this.refreshContainerSize(this.visibleItem);
+					this.slideRight(oldVisibleItem, this.visibleItem);
 				} else {
-					that.visibleItem.hide();
-					that.container.hide();
-					that.selectedItem = that.visibleItem = null;
-					that.isVisible = false;
+					this.visibleItem.hide();
+					this.container.hide();
+					this.selectedItem = this.visibleItem = null;
+					this.isVisible = false;
 				}
 
-				that.showPathTooltip();
+				this.showPathTooltip();
 			},
 			/**
 			 * Play the slide animation forward 
@@ -288,12 +303,11 @@
 			 * @param {Object} itemToShow
 			 */
 			slideLeft : function (itemToHide, itemToShow) {
-				var that = this;
 				
 				itemToShow.animate(
 					{ left : '0px' }, 
 					{
-						duration : that.options.animationDuration,
+						duration : this.options.animationDuration,
 						queue : false
 					}
 				);
@@ -301,7 +315,7 @@
 				itemToHide.animate(
 					{ left : (itemToHide.outerWidth() * -1) + 'px' }, 
 					{
-						duration : that.options.animationDuration,
+						duration : this.options.animationDuration,
 						queue : false
 					}
 				);				
@@ -312,12 +326,11 @@
 			 * @param {Object} itemToShow
 			 */
 			slideRight : function (itemToHide, itemToShow) {
-				var that = this;
 				
 				itemToHide.animate(
 					{ left : (itemToHide.outerWidth()) + 'px' }, 
 					{
-						duration : that.options.animationDuration,
+						duration : this.options.animationDuration,
 						queue : false,
 						complete : function () { $(this).hide(); }
 					}
@@ -326,7 +339,7 @@
 				itemToShow.animate(
 					{ left : '0px' }, 
 					{
-						duration : that.options.animationDuration,
+						duration : this.options.animationDuration,
 						queue : false
 					}
 				);			
@@ -336,20 +349,19 @@
 			 * @param {Object} parentItemId
 			 */
 			loadItems : function (parentItemId) {
-				var that = this;
-				var items = that.getCachedItems(parentItemId);
+				var items = this.getCachedItems(parentItemId);
 				if (!items) {
-					that.debug('Loading itens sons of {0}', parentItemId);
-					that.beginLoadItems(parentItemId);
-					that.options.load(
+					this.debug('Loading itens sons of {0}', parentItemId);
+					this.beginLoadItems(parentItemId);
+					this.options.load(
 						{term : null, parent : parentItemId }, 
-						function(response) { 
-							that.endLoadItems(parentItemId);
-							that.loadItemsCompleted(parentItemId, response);
-						}
+						$.proxy(function(response) { 
+								this.endLoadItems(parentItemId);
+								this.loadItemsCompleted(parentItemId, response);
+							}, this)
 					);
 				} else {
-					that.loadItemsCompleted(parentItemId, items);
+					this.loadItemsCompleted(parentItemId, items);
 				}
 			},
 			/**
@@ -371,18 +383,17 @@
 			 * @param {Object[]} items Loaded items array
 			 */
 			loadItemsCompleted : function (parentItemId, items) {
-				var that = this;
 				if (items) {
-					if (that.options.cache) {
-						that.el.data('sons-of-' + parentItemId, items);
+					if (this.options.cache) {
+						this.el.data('sons-of-' + parentItemId, items);
 					}
-					that.debug('Result: {0}', items.toString());
+					this.debug('Result: {0}', items.toString());
 					
-					var itemContainer = that.createItemsContainer(parentItemId, items);
-					that.showItem(itemContainer);
+					var itemContainer = this.createItemsContainer(parentItemId, items);
+					this.showItem(itemContainer);
 					
 				} else {
-					that.debug('No child itens found');
+					this.debug('No child itens found');
 				}
 			},
 			/**
@@ -391,11 +402,10 @@
 			 * @returns {Object[]|null} Cached items Array.
 			 */
 			getCachedItems : function (parentItemId) {
-				var that = this;
-				if (that.options.cache) {
-					var items = that.el.data('sons-of-' + parentItemId);
+				if (this.options.cache) {
+					var items = this.el.data('sons-of-' + parentItemId);
 					if (items) {
-						that.debug('Loading itens sons of {0} from cache', parentItemId);
+						this.debug('Loading itens sons of {0} from cache', parentItemId);
 						return items;
 					}
 				}
@@ -409,27 +419,27 @@
 			 * @returns {Object} items jquery object
 			 */
 			createItemsContainer : function (parentItemId, items) {
-				var that = this;
-				var html = $("#" + that.prefix + "-sons-of-" + parentItemId);
+				var html = $("#" + this.prefix + "-sons-of-" + parentItemId);
 				if (html.length === 0) {
-					that.showContainer();
-					that.debug('Generating {0} container html', parentItemId);
+					this.showContainer();
+					this.debug('Generating {0} container html', parentItemId);
 					
-					html = $("<ul id='" + that.prefix + "-sons-of-" + parentItemId + "' data-parent='" + parentItemId + "' class='act-menu' ></ul>")
-						.appendTo(that.container);
+					html = $("<ul id='" + this.prefix + "-sons-of-" + parentItemId + "' data-parent='" + parentItemId + "' class='act-menu' ></ul>")
+						.appendTo(this.container);
 
 					if (parentItemId !== null) {
-						if (that.options.showBackButton) {
-							var backButton = that.createBackButton(parentItemId);
+						if (this.options.showBackButton) {
+							var backButton = this.createBackButton(parentItemId);
 							html.append(backButton);
 						}
-						if (that.options.showParentInChildList && that.options.canSelectParentInChildList) {
-							var parentItemData = $("#" + that.prefix + "-son-" + parentItemId).data('item');
-							var selectableParent = that.createSelectableParentItem(parentItemData);
+						if (this.options.showParentInChildList && this.options.canSelectParentInChildList) {
+							var parentItemData = $("#" + this.prefix + "-son-" + parentItemId).data('item');
+							var selectableParent = this.createSelectableParentItem(parentItemData);
 							html.append(selectableParent);
 						}
 					}
 					
+					var that = this;
 					$.each(items, function () {
 						that.debug('Generating child {0}', this.toString());
 						var child = that.createItem(parentItemId, this);
@@ -446,7 +456,7 @@
 			 */
 			createBackButton : function (parentItemId) {
 				var that = this;
-				var backButton = $("<li id='" + that.prefix + "-back-" + parentItemId + "' data-parent='" + parentItemId + "' class='act-back act-unselectable'><span>" + that.options.backLabel + "</span></li>")
+				var backButton = $("<li id='" + this.prefix + "-back-" + parentItemId + "' data-parent='" + parentItemId + "' class='act-back act-unselectable'><span>" + this.options.backLabel + "</span></li>")
 					.click(function (e) {
 						that.selectItem();
                         
@@ -479,9 +489,9 @@
 			 */
 			createSelectableParentItem : function (item) {
 				var that = this;
-				var itemValue = that.getItemValue(item);
-				var $child = $("#" + that.prefix + "-son-" + itemValue);
-				var child = $("<li id='" + that.prefix + "-parent-" + itemValue + "' data-parent='" + $child.data('parent') + "' data-val='" + itemValue + "' ><span>" + that.getItemText(item) + "</span></li>");
+				var itemValue = this.getItemValue(item);
+				var $child = $("#" + this.prefix + "-son-" + itemValue);
+				var child = $("<li id='" + this.prefix + "-parent-" + itemValue + "' data-parent='" + $child.data('parent') + "' data-val='" + itemValue + "' ><span>" + this.getItemText(item) + "</span></li>");
 				child.data('item', item)
 					.addClass('act-selectableParent')
 					.click(function (e) {
@@ -517,8 +527,8 @@
 			 */
 			createItem : function (parentItemId, item) {
 				var that = this;
-				var itemValue = that.getItemValue(item);
-				var child = $("<li id='" + that.prefix + "-son-" + itemValue + "' data-parent='" + parentItemId + "'  data-val='" + itemValue + "' ><span>" + that.getItemText(item) + "</span></li>");
+				var itemValue = this.getItemValue(item);
+				var child = $("<li id='" + this.prefix + "-son-" + itemValue + "' data-parent='" + parentItemId + "'  data-val='" + itemValue + "' ><span>" + this.getItemText(item) + "</span></li>");
 				child.data('item', item)
 					.click(function (e) {
 						var childCount = that.getItemChildCount($(this).data('item'));
@@ -548,13 +558,13 @@
 						}
 					);
 
-				if (that.getItemChildCount(item) > 0) {
+				if (this.getItemChildCount(item) > 0) {
 					child.addClass('act-menu-hasChildren');
-					if (!that.options.canSelectParent) {
+					if (!this.options.canSelectParent) {
 						child.addClass('act-unselectable');
 					}
                     
-                    $("<span class=\"pull-right\">" + that.options.rightArrowTemplate(item) + "</span>").insertAfter(child.find("span"));
+                    $("<span class=\"pull-right\">" + this.options.rightArrowTemplate(item) + "</span>").insertAfter(child.find("span"));
 				}
 				
 				return child;
@@ -564,60 +574,57 @@
 			 * @param {Object} items
 			 */
 			focusNextItem : function (items) {
-				var that = this;
 				var nextItem = items.children("li:first");
-				if (that.selectedItem) {
-					that.selectedItem.toggleClass('act-selected');
-					nextItem = that.selectedItem.next();
+				if (this.selectedItem) {
+					this.selectedItem.toggleClass('act-selected');
+					nextItem = this.selectedItem.next();
 					if (nextItem.length === 0) {
 						nextItem = items.children("li:first");
 					}
 				}
 				nextItem.toggleClass('act-selected');
-				that.selectedItem = nextItem;
-				that.ensureItemIsVisibile(that.selectedItem);
-				that.showPathTooltip();
+				this.selectedItem = nextItem;
+				this.ensureItemIsVisibile(this.selectedItem);
+				this.showPathTooltip();
 			},			
 			/**
 			 * Focus the previous available item from list
 			 * @params {Object} items
 			 */
 			focusPreviousItem : function (items) {
-				var that = this;
-				if (!that.selectedItem) {
-					that.hideItem();
+				if (!this.selectedItem) {
+					this.hideItem();
 				} else {
-					that.selectedItem.toggleClass('act-selected');
-					var previousItem = that.selectedItem.prev();
+					this.selectedItem.toggleClass('act-selected');
+					var previousItem = this.selectedItem.prev();
 					if (previousItem.length === 0) {
 						previousItem = items.children("li:last");
 					}
 					
 					previousItem.toggleClass('act-selected');
-					that.selectedItem = previousItem;
-					that.ensureItemIsVisibile(that.selectedItem);
-					that.showPathTooltip();
+					this.selectedItem = previousItem;
+					this.ensureItemIsVisibile(this.selectedItem);
+					this.showPathTooltip();
 				}
 			},
 			/**
 			 * Show the current complete path tooltip
 			 */
 			showPathTooltip : function () {
-				var that = this;
-				var tooltip = $("#" + that.prefix + "-act-pathTooltip");
+				var tooltip = $("#" + this.prefix + "-act-pathTooltip");
 				if (tooltip.length === 0) {
-					tooltip = $("<div id='" + that.prefix + "-act-pathTooltip' class='act-pathTooltip' style='display:none'><div>");
+					tooltip = $("<div id='" + this.prefix + "-act-pathTooltip' class='act-pathTooltip' style='display:none'><div>");
 					tooltip.appendTo('body');
 				}
 				tooltip.hide();
 				tooltip.text('');
-				if (that.options.showPathTooltip && that.selectedItem && !that.selectedItem.is('.act-back')) {
-					var currentItem = that.selectedItem;
+				if (this.options.showPathTooltip && this.selectedItem && !this.selectedItem.is('.act-back')) {
+					var currentItem = this.selectedItem;
 					var totalPath = '';
 					do {
 						totalPath = currentItem.find("span:first").text() + totalPath;
-						totalPath = that.options.treeSeparator + totalPath;
-						currentItem = $("#" + that.prefix + "-son-" + currentItem.data('parent'));
+						totalPath = this.options.treeSeparator + totalPath;
+						currentItem = $("#" + this.prefix + "-son-" + currentItem.data('parent'));
 					} while (currentItem.length > 0);
 					tooltip.text(totalPath);
 					tooltip.show();
@@ -627,21 +634,20 @@
 			 * Select the item from list
 			 */
 			selectItem : function () {
-				var that = this;
-				if (that.isVisible && that.selectedItem) {
-					if (!that.selectedItem.is('.act-unselectable')) {
-						var item = that.selectedItem.data('item');
-						that.el.val(that.getItemText(item));
-						that.container.hide();
-						if (that.options.showPathTooltip) {
-							$("#" + that.prefix + "-act-pathTooltip").hide();
+				if (this.isVisible && this.selectedItem) {
+					if (!this.selectedItem.is('.act-unselectable')) {
+						var item = this.selectedItem.data('item');
+						this.el.val(this.getItemText(item));
+						this.container.hide();
+						if (this.options.showPathTooltip) {
+							$("#" + this.prefix + "-act-pathTooltip").hide();
 						}
-						that.isVisible = false;
-						that.options.select.apply(that.el, [item]);
-					} else if (that.selectedItem.is('.act-menu-hasChildren')) {
-						that.loadItems(that.selectedItem.data('val'));
-					} else if (that.selectedItem.is('.act-back')) {
-						that.hideItem();
+						this.isVisible = false;
+						this.options.select.apply(this.el, [item]);
+					} else if (this.selectedItem.is('.act-menu-hasChildren')) {
+						this.loadItems(this.selectedItem.data('val'));
+					} else if (this.selectedItem.is('.act-back')) {
+						this.hideItem();
 					}
 				}
 			},
@@ -649,22 +655,20 @@
 			 * Hide all itens
 			 */
 			hideAllItens : function () {
-				var that = this;
-				while (that.isVisible) {
-					that.hideItem();
+				while (this.isVisible) {
+					this.hideItem();
 				}
 			},
 			/**
 			 * Check if selectedItem has childs and load then
 			 */
 			openChildItens : function () {
-				var that = this;
-				if (that.isVisible && that.selectedItem && !that.selectedItem.is('.act-back')) {
-					var item = that.selectedItem.data('item');
+				if (this.isVisible && this.selectedItem && !this.selectedItem.is('.act-back')) {
+					var item = this.selectedItem.data('item');
 					// If it has children
-					if (that.getItemChildCount(item) > 0) {
-						var itemId = that.getItemValue(item);
-						that.loadItems(itemId);
+					if (this.getItemChildCount(item) > 0) {
+						var itemId = this.getItemValue(item);
+						this.loadItems(itemId);
 					}
 				}
 			},
@@ -673,31 +677,30 @@
 			 * @param {Number} dir
 			 */
 			navigate : function (dir) {
-				var that = this;
 				switch (dir) {
 				case keys.DOWN:
-					var childItens = that.visibleItem;
-					if (!that.visibleItem) {
-						that.loadItems(null);
+					var childItens = this.visibleItem;
+					if (!this.visibleItem) {
+						this.loadItems(null);
 					} else {
-						if (that.isVisible) {
-							that.focusNextItem(childItens);
+						if (this.isVisible) {
+							this.focusNextItem(childItens);
 						} else {
-							that.isVisible = true;
-							that.container.show();
+							this.isVisible = true;
+							this.container.show();
 						}
 					}
 					break;
 				case keys.UP:
-					if (that.isVisible) {
-						that.focusPreviousItem(that.visibleItem);
+					if (this.isVisible) {
+						this.focusPreviousItem(this.visibleItem);
 					}
 					break;
 				case keys.LEFT:
-					that.hideItem();
+					this.hideItem();
 					break;
 				case keys.RIGHT:
-					that.openChildItens();
+					this.openChildItens();
 					break;
 				}
 			},
@@ -705,61 +708,62 @@
 			 * Dispose resources
 			 */
 			dispose: function () {
-					var that = this;
-					that.el.off('.autocompletetree').removeData('autocompletetree');
-					that.container.remove();
+					this.el.off('.autocompletetree').removeData('autocompletetree');
+					this.container.remove();
 					
-					if (that.options.showPathTooltip){
-						$("#" + that.prefix + "-act-pathTooltip").remove();
+					if (this.options.showPathTooltip){
+						$("#" + this.prefix + "-act-pathTooltip").remove();
 					}
 			},
 			/**
 			 * Init
 			 */
 			initialize : function () {
-				var that = this;
 
 				// Remove autocomplete attribute to prevent native suggestions:
-				that.element.setAttribute('autocomplete', 'off');
+				this.element.setAttribute('autocomplete', 'off');
 
-				that.el.on('keydown.autocompletetree', function (e) {
+				var that = this;
+				this.el.on('keydown.autocompletetree', function (e) {
 					that.onKeyPress(e);
 				});
-                
+                this.el.on('keyup.autocompletetree', function (e) {
+					that.onKeyUp(e);
+				});
+				
                 $("body").on('click', function (e) {
                     that.onBodyClick(e);
                 });
 
-				that.debug('AutoComplete-Tree initialized');
+				this.debug('AutoComplete-Tree initialized');
 			}
 
 		};
 
 		$.fn.autocompleteTree = function (options, args) {
-        var dataKey = 'autocompletetree';
-        // If function invoked without argument return
-        // instance of the first matched element:
-        if (arguments.length === 0) {
-            return this.first().data(dataKey);
-        }
-
-        return this.each(function () {
-            var inputElement = $(this),
-                instance = inputElement.data(dataKey);
-
-            if (typeof options === 'string') {
-                if (instance && typeof instance[options] === 'function') {
-                    instance[options](args);
-                }
-            } else {
-                // If instance already exists, destroy it:
-                if (instance && instance.dispose) {
-                    instance.dispose();
-                }
-                instance = new AutocompleteTree(this, options);
-                inputElement.data(dataKey, instance);
-            }
-        });
-    };
-
-	}));
+	        var dataKey = 'autocompletetree';
+	        // If function invoked without argument return
+	        // instance of the first matched element:
+	        if (arguments.length === 0) {
+	            return this.first().data(dataKey);
+	        }
+	
+	        return this.each(function () {
+	            var inputElement = $(this),
+	                instance = inputElement.data(dataKey);
+	
+	            if (typeof options === 'string') {
+	                if (instance && typeof instance[options] === 'function') {
+	                    instance[options](args);
+	                }
+	            } else {
+	                // If instance already exists, destroy it:
+	                if (instance && instance.dispose) {
+	                    instance.dispose();
+	                }
+	                instance = new AutocompleteTree(this, options);
+	                inputElement.data(dataKey, instance);
+	            }
+	        });
+	    };
+}));

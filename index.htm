@@ -57,6 +57,7 @@
 			};
 		
 			$("#demo_001").autocompleteTree({
+				debug: true,
 				load: function (request, response) {
 					var prefix = request.term === null ? request.parent : request.term;
 					response(sampleDB_001[request.parent]);
@@ -87,6 +88,7 @@
 			};
 		
 			$("#demo_002").autocompleteTree({
+				debug: true,
 				load: function (request, response) {
 					var prefix = request.term === null ? request.parent : request.term;
 					response(sampleDB_002[request.parent]);

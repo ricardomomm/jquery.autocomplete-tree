@@ -39,11 +39,11 @@ feature("Down Key", function () {
 			});
 			
 			then("first tree level should be visible", function () {
-				expect($("#act-container")).toBeVisible();
+				expect($(".act-container")).toBeVisible();
 			});			
 			
 			then("first item should be focused", function () {
-				expect($("#act-container > .act-menu:first-child li:first")).toHaveClass('act-selected');
+				expect($(".act-container > .act-menu:first-child li:first")).toHaveClass('act-selected');
 			});			
 		});
 		
@@ -68,8 +68,8 @@ feature("Down Key", function () {
 			});
 			
 			then("second item should be focused", function () {
-				expect($("#act-container > .act-menu:first-child li.act-selected").length).toBe(1);
-				expect($("#act-container > .act-menu:first-child li:nth-child(2)")).toHaveClass('act-selected');
+				expect($(".act-container > .act-menu:first-child li.act-selected").length).toBe(1);
+				expect($(".act-container > .act-menu:first-child li:nth-child(2)")).toHaveClass('act-selected');
 			});			
 		});
 		

@@ -1,6 +1,5 @@
 {
   "name": "jquery.autocomplete-tree",
-  "version": "0.0.2",
   "description": "Autocomplete with tree navigation",
   "homepage": "https://github.com/ricardomomm/jquery.autocomplete-tree",
   "author": "Ricardo Momm",
@@ -19,7 +18,7 @@
     "url": "https://github.com/ricardomomm/jquery.autocomplete-tree/issues"
   },
   "scripts": {
-	"test": "grunt test --verbose --force"
+    "test": "grunt test --verbose --force"
   },
   "license": "MIT",
   "dependencies": {
@@ -31,5 +30,6 @@
     "grunt-contrib-uglify": "~0.6.0",
     "grunt-contrib-cssmin": "~0.10.0",
     "grunt-contrib-jasmine": "~0.5.2"
-  }
+  },
+  "version": "0.0.3"
 }

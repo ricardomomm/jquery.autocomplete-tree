@@ -23,11 +23,11 @@ A simple jQuery autocomplete with tree/hierarchical navigation
 
 ## Building & Testing
 
-* `grunt build`
+* `grunt`
 * `grunt test`
 
 ## TODO list
 
 * Tree search/autocomplete 
 * Icons
-* Spec tests
+* Checkboxes/multiselect

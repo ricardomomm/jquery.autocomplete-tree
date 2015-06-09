@@ -1,7 +1,6 @@
 {
   "name": "jquery.autocomplete-tree",
   "main": "dist/jquery.autocomplete-tree.min.js",
-  "version": "0.0.2",
   "authors": [
     "Ricardo Momm <ricardo18.bnu@gmail.com>"
   ],
@@ -29,5 +28,6 @@
   "dependencies": {
     "jquery": ">=1.7",
     "bootstrap": "~3.3.0"
-  }
+  },
+  "version": "0.0.3"
 }

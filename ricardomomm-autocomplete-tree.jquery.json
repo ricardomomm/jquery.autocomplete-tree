@@ -7,7 +7,6 @@
     "autocomplete",
     "tree"
   ],
-  "version": "0.0.2",
   "author": {
     "name": "Ricardo Momm",
     "url": "https://github.com/ricardomomm"
@@ -24,5 +23,6 @@
   "download": "https://github.com/ricardomomm/jquery.autocomplete-tree/tree/master/dist",
   "dependencies": {
     "jquery": ">=1.7"
-  }
+  },
+  "version": "0.0.3"
 }

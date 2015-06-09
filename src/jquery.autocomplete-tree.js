@@ -189,8 +189,9 @@
 					});
 				} else {
 					var height = 0;
+					var that = this;
 					children.each(function (index, el) {
-						if (index < this.options.maxVisibleItens) {
+						if (index < that.options.maxVisibleItens) {
 							height += $(el).outerHeight();
 						}
 					});
@@ -208,7 +209,7 @@
 			 */
 			ensureItemIsVisibile : function (item) {
 				if (this.isHiddenByScroll(item)) {
-					this.container.animate({ scrollTop : item.offset().top - this.container.offset().top}, "fast");
+					this.container.animate({ scrollTop : item.offset().top - this.container.offset().top }, "fast");
 				}
 			},
 			/**
@@ -224,10 +225,10 @@
 				var docViewTop = this.container.scrollTop();
 				var docViewBottom = docViewTop + this.container.height();
 
-				var elemTop = item.offset().top - this.container.offset().top;
+				var elemTop = (item.offset().top - this.container.offset().top) + docViewTop;
 				var elemBottom = elemTop + item.height();
 
-				return ((elemBottom > docViewBottom) || (elemTop < docViewTop));
+				return ((elemBottom < docViewTop || elemBottom > docViewBottom) || (elemTop < docViewTop || elemTop > docViewBottom));
 			},
 			/**
 			 * Show item 
